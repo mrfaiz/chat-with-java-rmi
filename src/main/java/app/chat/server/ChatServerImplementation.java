@@ -8,8 +8,9 @@ package app.chat.server;
 import app.chat.interfaces.IChatClient;
 import app.chat.interfaces.IChatServer;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  *
@@ -17,7 +18,8 @@ import java.util.List;
  */
 public class ChatServerImplementation extends java.rmi.server.UnicastRemoteObject implements IChatServer {
 
-    private List<String> users = new ArrayList<>();
+    ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private final java.util.Map<String, IChatClient> usersMap = new java.util.concurrent.ConcurrentHashMap<>();
 
     public ChatServerImplementation() throws RemoteException {
         super();
@@ -25,25 +27,32 @@ public class ChatServerImplementation extends java.rmi.server.UnicastRemoteObjec
 
     @Override
     public synchronized boolean register(IChatClient client, String name) throws RemoteException {
-        if (users.contains(name)) {
+        if (usersMap.containsKey(name)) {
             return false;
         } else {
-            users.add(name);
+            usersMap.put(name, client);
+            System.out.println(name + " joined ! total clients=>" + usersMap.size());
+            executor.execute(new SendUserOnlineStatus(true, name, usersMap));
+            executor.execute(new SendUserList(name, usersMap));
         }
         return true;
     }
 
     @Override
     public synchronized List<String> getUsers() throws RemoteException {
-        return users;
+        return new java.util.ArrayList<>(usersMap.keySet());
     }
 
     @Override
-    public synchronized void logout(IChatClient c) throws RemoteException {
-
+    public synchronized boolean logout(IChatClient c) throws RemoteException {
+        usersMap.remove(c.userName());
+        executor.execute(new SendUserOnlineStatus(false, c.userName(), usersMap));
+        return true;
     }
 
     @Override
-    public synchronized void send(String msg) throws RemoteException {
+    public synchronized void send(String msg, String sender) throws RemoteException {
+        executor.execute(new SendMessageToAll(sender + ": " + msg, sender, usersMap));
+        //  System.out.println(msg);
     }
 }

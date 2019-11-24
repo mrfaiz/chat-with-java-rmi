@@ -21,6 +21,10 @@ public class CalculatorClient {
             ICalculator cal = (ICalculator) reg.lookup(uri);
 
             System.out.println("1+1 =>" + cal.add(1, 1));
+            System.out.println("Total Operaiton=>" + cal.getTotalOperations());
+
+            cal.getSerializableData().getStuID();
+            System.out.println("Total Operaiton=>" + cal.getSerializableData().getNbmerOfRequest());
         } catch (java.rmi.RemoteException | java.rmi.NotBoundException e) {
         }
 

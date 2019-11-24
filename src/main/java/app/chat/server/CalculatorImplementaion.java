@@ -13,29 +13,49 @@ import app.chat.interfaces.ICalculator;
  */
 public class CalculatorImplementaion extends java.rmi.server.UnicastRemoteObject implements ICalculator {
 
+    int totalOperations;
+    SerializableData sObj = new SerializableData();
+
     public CalculatorImplementaion() throws java.rmi.RemoteException {
         super();
     }
 
     @Override
-    public int add(int a, int b) {
+    public synchronized int add(int a, int b) {
         System.out.println(" add called ");
+        increment();
         return a + b;
     }
 
     @Override
-    public int substract(int a, int b) {
+    public synchronized int substract(int a, int b) {
+        increment();
         return a - b;
     }
 
     @Override
-    public int multiplicaiton(int a, int b) {
+    public synchronized int multiplicaiton(int a, int b) {
+        increment();
         return a * b;
     }
 
     @Override
-    public float division(int a, int b) {
+    public synchronized float division(int a, int b) {
+        increment();
         return a / b;
     }
 
+    private void increment() {
+        totalOperations++;
+    }
+
+    @Override
+    public synchronized int getTotalOperations() {
+        return totalOperations;
+    }
+
+    @Override
+    public synchronized SerializableData getSerializableData() {
+        return sObj;
+    }
 }

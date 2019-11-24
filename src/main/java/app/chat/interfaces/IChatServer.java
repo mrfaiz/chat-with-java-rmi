@@ -17,11 +17,11 @@ public interface IChatServer extends java.rmi.Remote {
      * Registers the given client at the server.
      *
      * @param client
-     * @param msg
+     * @param name
      * @return
      * @throws java.rmi.RemoteException
      */
-    public boolean register(IChatClient client, String msg) throws java.rmi.RemoteException;
+    public boolean register(IChatClient client, String name) throws java.rmi.RemoteException;
 
     /**
      * Returns the collection of users currently logged in.
@@ -37,7 +37,7 @@ public interface IChatServer extends java.rmi.Remote {
      * @param c
      * @throws java.rmi.RemoteException
      */
-    public void logout(IChatClient c) throws java.rmi.RemoteException;
+    public boolean logout(IChatClient c) throws java.rmi.RemoteException;
 
     /**
      * Sends the given message to all connected clients.
@@ -45,5 +45,5 @@ public interface IChatServer extends java.rmi.Remote {
      * @param msg
      * @throws java.rmi.RemoteException
      */
-    public void send(String msg) throws java.rmi.RemoteException;
+    public void send(String msg,String sender) throws java.rmi.RemoteException;
 }

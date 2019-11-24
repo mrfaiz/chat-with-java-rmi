@@ -18,4 +18,9 @@ public interface IChatClient extends java.rmi.Remote {
      * @throws java.rmi.RemoteException
      */
     public void send(String msg) throws java.rmi.RemoteException;
+
+    public void sendExistingUserist(java.util.List<String> userLIst) throws java.rmi.RemoteException;
+
+   // public void sendLogoutNotificaiton(String userName) throws java.rmi.RemoteException;
+    public String userName() throws java.rmi.RemoteException;
 }
